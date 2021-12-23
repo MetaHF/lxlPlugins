@@ -22,18 +22,19 @@ class LF_translate{
     constructor(version,name,useLanguage,flieDir){
         this.version = version
         this.flieDir = flieDir?flieDir:'.\\plugins\\lightDEV\\Translate\\'+name+'\\'
-        this.useLanguage = useLanguage?useLanguage:null
+        this.useLanguage = useLanguage?useLanguage:'zh_CN'
     }
     checkTranslate(){
         try {
             {
                 let useLanguage = new JsonConfigFile('.\\plugins\\lightTranslate','{"userLanguage":"zh_CN"}')
+                useLanguage = useLanguage.get('userLanguage')
                 let testFile = File.readFrom(this.flieDir + useLanguage + '.json')
                 if (testFile == null){
-                    WARNING(1,userLanguage)
+                    WARN(1,useLanguage)
                     useLanguage = this.useLanguage
                     testFile = File.readFrom(this.flieDir + useLanguage + '.json')
-                    if(testFile) throw 3
+                    if(testFile==null) throw 3
                 }
                 testFile = data.parseJson(testFile)
                 if(testFile['_version']!=this.version) throw 4
@@ -43,13 +44,13 @@ class LF_translate{
         } catch (error) {
             //读取出错
             ERROR(error)
-            return true
+            return false
         }
     }
     translate(key){
         try {
             let uselangugage = this.checkTranslate()
-            if (uselangugage) {
+            if (uselangugage==false) {
                 return false
             }else{
                 let TRstr = new File(this.flieDir + useLanguage + '.json',1)
@@ -59,7 +60,7 @@ class LF_translate{
                 str = data.parseJson(str)
                 if(str) throw 8
                 if(str['Translate'][key]){
-                    WARNING(2,key)
+                    WARN(2,key)
                 } 
                 return str['Translate'][key]
             }
@@ -71,6 +72,7 @@ class LF_translate{
 }
 
 function ERROR(error){
+    log(error)
     switch (error) {
         case 1:
             log('导出错误检查是否有导出函数名为LF_translate')
@@ -102,7 +104,7 @@ function ERROR(error){
     }
 }
 
-function WARNING(num,msg){
+function WARN(num,msg){
     log('[警告]：###########')
     switch (num) {
         case 1:
@@ -115,5 +117,5 @@ function WARNING(num,msg){
             break;
     }
 }
-let test = new LF_translate(0.01,'zh_CN')
+let test = new LF_translate(0.01,'lightTranslate','zh_CN')
 log(test.translate('test'))
