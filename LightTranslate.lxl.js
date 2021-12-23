@@ -19,10 +19,10 @@ function LF_translate(id, version, flieDir, useLanguage) {
         try {
             if (File.exists(this.flieDir + this.useLanguage + '.json')) throw "未找到文件"
             {
-                let testFile = new JsonConfigFile(this.flieDir + this.useLanguage + '.json')
-                if (testFile.get(_version) != this.version) throw "翻译文件版本不匹配"
+                let testFile = File.readFrom(this.flieDir + this.useLanguage + '.json')
             }
         } catch (error) {
+            //关闭读取配置
             log(error)
         }
     }
