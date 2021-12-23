@@ -3,4 +3,4 @@
 作者 : lightfly
 */
 const __VERSION = 0.01
-mc.li
+
