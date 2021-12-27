@@ -5,11 +5,12 @@
 const __VERSION = 0.01
 const MIN_LXLVERSION = { major: 0, minor: 5, revision: 10}
 //主版本,次版本,修订版本，是否测试版
+lxl.export(ERROR,'LF_translate')
 
 function checkLXL() {
     try {
         if(lxl.requireVersion(MIN_LXLVERSION['major'],MIN_LXLVERSION['minor'],MIN_LXLVERSION['revision'])){
-            if(!(lxl.export(LF_translate,LF_translate))) throw 1
+            if(!(mo.export=ERROR) throw 1
         }else{
             throw 2
         }
@@ -39,6 +40,7 @@ class LF_translate{
                 testFile = data.parseJson(testFile)
                 if(testFile['_version']!=this.version) throw 4
                 if(testFile['Translate']==null) throw 5
+
                 return useLanguage
             }
         } catch (error) {
@@ -49,17 +51,17 @@ class LF_translate{
     }
     translate(key){
         try {
-            let uselangugage = this.checkTranslate()
-            if (uselangugage==false) {
+            let useLanguage = this.checkTranslate()
+            if(useLanguage == false) {
                 return false
             }else{
                 let TRstr = new File(this.flieDir + useLanguage + '.json',1)
-                if(TRstr) throw 6
+                if(TRstr==null) throw 6
                 let str = TRstr.readAllSync()
-                if(str) throw 7
+                if(str==null) throw 7
                 str = data.parseJson(str)
-                if(str) throw 8
-                if(str['Translate'][key]){
+                if(str==null) throw 8
+                if(str['Translate'][key]==null){
                     WARN(2,key)
                 } 
                 return str['Translate'][key]
