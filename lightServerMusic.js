@@ -26,7 +26,7 @@ function checkCFG(path){
     }
 }
 function FileCopyOGG(from,to){
-    //移动所有ogg格式文件到
+    //移动所有ogg格式文件到指定目录
 }
 function refresh(cfg){
     let usingNE = cfg.get('usingName')
