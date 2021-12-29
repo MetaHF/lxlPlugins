@@ -38,6 +38,7 @@ function refresh(cfg){
     let serverRESDIR = cfg.get('serverRES')
     let pluginData = new File(LF_PATH[SM_DIR],0)
     let RESData = new File(serverRESDIR+'sounds\\sound_definitions.json',0)
+<<<<<<< HEAD
 
     function FuckOldP(path,json){
         let pluginDataFR = new File(LF_PATH[SM_DIR],0)
@@ -72,6 +73,57 @@ function refresh(cfg){
 
         }
 
+=======
+    let procedureFunc = "Procedure(index)"
+	function Procedure(index){
+		
+	}
+    function FuckOldP(path,json){
+        let pluginDataFR = new File(path,0)
+        let wJson = {}
+        if(!(pluginDataFR.seekTo(0,false)&&pluginDataFW.seekTo(0,false))){
+            Error(3,'无法归零文件指针')
+            return false
+        }
+        if(!(pluginDataFR.readAll(function(result){
+            if(result==null){
+                
+            }
+            for (let i = 0; i < result['music']['main'].length; i++) {
+                let same = false
+                for(let v =0; v<json.length;v++){
+                    if(result['music']['main'][i]['name'] == json[v]){
+                        same = true
+                        json.splice(v,1)
+                        break
+                    }
+                if(!same){
+                    result['music']['main'].splice(i,1)
+                    i -= 1
+                    logger.info('已删除旧文件'+result['music']['main'][i]['name'])
+                }
+                }
+             for(let i =0;i<json.length;i++){
+				json[i] = {name:json[i]}
+			}
+			result['music']['main'] = result['music']['main'].comcat(json)
+			//拼接全部数据 相同的，新增的
+			
+             DataW(result,path,procedureFunc,1)
+            }
+        }))){
+            Error(4,'无法读取文件')
+            return false
+        }
+        function DataW(json,path,func,index){
+			let DataFW = new File(path,2)
+			if(DataFW.seekTo(0,false)){ERROR("DataW","写入文件指针无法归零")}
+			DataW.write(json,function(){
+				eval(func)
+			})
+        }
+
+>>>>>>> e806366b41b6371e406fdf9cdd087f2dbf66a38d
     }
 }
 
