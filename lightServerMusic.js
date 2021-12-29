@@ -5,145 +5,156 @@ lxl load ../test/lightServerMusic.js
 */
 
 const __VERSION = 0.01
-const MIN_LXLVERSION = { major: 0, minor: 5, revision: 10}
+const MIN_LXLVERSION = { major: 0, minor: 5, revision: 10 }
 
 const LF_DESCRIPTION = "歌曲$name"
 const LF_CFGPATH = '.\\plugins\\lightDEV\\lightServerMusic\\config.json'
 const LF_PATH = {
-    SM_DIR = '.\\plugins\\lightDEV\\lightServerMusic\\DATA\\'
+    SM_DIR: '.\\plugins\\lightDEV\\lightServerMusic\\DATA\\'
 }
 
-if(!(File.exists(LF_CFGPATH))){
+const postfix = 'ogg'
+
+logger.info('test')
+init(LF_CFGPATH)
+if (!(File.exists(LF_CFGPATH))) {
     init(LF_CFGPATH)
+    logger.info('test')
 }
 
-function checkCFG(path){
+function checkCFG(path) {
     let cfg = new JsonConfigFile(path)
-    if (cfg == null){
+    if (cfg == null) {
         ERROR(2)
         return false
-    }else{
-        if(cfg.get('refresh')==false){
+    } else {
+        if (cfg.get('refresh') == false) {
 
         }
     }
 }
-function FileCopyNoPostfix(from,to){
+function FileCopyNoPostfix(from, to, postfix) {
     //移动所有ogg格式文件到指定目录
+    let PostfixRP = new RegExp('[.]' + postfix + '$')
+    let outArray = []
+    outArray = File.getFilesList(from)
+    File.mkdir(to)
+    log(outArray)
+    for (let i = 0; i < outArray.length; i++) {
+        if (!(PostfixRP.test(outArray))) {
+            outArray.splice(i, 1)
+            --i
+            log(outArray)
+        } else if(!(File.getFilesList(to)[i]==outArray[i])){
+            if (!(File.copy(from + outArray[i], to))) { Error('复制错误： ' + outArray[i]) }
+            else { logger.info('导入音乐' + outArray[i]) }
+        }
+    }
+    return outArray
 }
-function refresh(cfg){
+function refresh(cfg) {
     let usingNE = cfg.get('usingName')
     let prefix = cfg.get('prefix')
     let content = cfg.get('desciption')
     let serverRESDIR = cfg.get('serverRES')
-    let pluginData = new File(LF_PATH[SM_DIR],0)
-    let RESData = new File(serverRESDIR+'sounds\\sound_definitions.json',0)
-<<<<<<< HEAD
-
-    function FuckOldP(path,json){
-        let pluginDataFR = new File(LF_PATH[SM_DIR],0)
-        let pluginDataFW = new File(LF_PATH[SM_DIR],2)
-        if(!(pluginDataFR.seekTo(0,false)&&pluginDataFW.seekTo(0,false))){
-            Error(3,'无法归零文件指针')
-            return false
-        }
-        if(!(pluginDataFR.readAll(function(result){
-            if(result==null){
-                
-            }
-            for (let i = 0; i < result['music']['main'].length; i++) {
-                let same = false
-                for(let v =0; v<json.length;v++){
-                    if(result['music']['main'][i]['name'] == json[v]){
-                        same = true
-                    }
-                if(!same){
-                    result['music']['main'][i]['name'].
-                    logger.info('已删除文件'+result['music']['main'][i]['name'])
-                }
-
-                }
-                
-            }
-        }))){
-            Error(4,'无法读取文件')
-            return false
-        }
-        function DataW(){
-
-        }
-
-=======
     let procedureFunc = "Procedure(index)"
-	function Procedure(index){
-		
-	}
-    function FuckOldP(path,json){
-        let pluginDataFR = new File(path,0)
-        let wJson = {}
-        if(!(pluginDataFR.seekTo(0,false)&&pluginDataFW.seekTo(0,false))){
-            Error(3,'无法归零文件指针')
+    Procedure(0)
+    function Procedure(index) {
+        switch (index) {
+            case 0:
+                let oggJson = FileCopyNoPostfix(LF_PATH['SM_DIR'] + 'music\\', serverRESDIR + 'sounds\\', postfix)
+                if (!(FuckOldP(LF_PATH['SM_DIR'] + 'data.json', oggJson)) || (oggJson)) {
+                    break
+                }
+                break;
+            case 1:
+                logger.info('test')
+            default:
+                break;
+        }
+    }
+    function FuckOldP(path, json) {
+        let pluginDataFR = new File(path, 0)
+        if (!(pluginDataFR.seekTo(0, false))) {
+            Error(3, '无法归零文件指针')
             return false
         }
-        if(!(pluginDataFR.readAll(function(result){
-            if(result==null){
-                
+        if (!(pluginDataFR.readAll(function (result) {
+            log(result)
+            if (result == null || result == []) {
+                result = {
+                    music: {
+                        main: [
+                            ''
+                        ]
+                    }
+                }
+                DataW(result, path, procedureFunc, 0)
+                return
+            }else{
+                result = data.parseJson(result)
             }
             for (let i = 0; i < result['music']['main'].length; i++) {
                 let same = false
-                for(let v =0; v<json.length;v++){
-                    if(result['music']['main'][i]['name'] == json[v]){
+                for (let v = 0; v < json.length; v++) {
+                    if (result['music']['main'][i]['name'] == json[v]) {
                         same = true
-                        json.splice(v,1)
+                        json.splice(v, 1)
+                        --v
                         break
                     }
-                if(!same){
-                    result['music']['main'].splice(i,1)
-                    i -= 1
-                    logger.info('已删除旧文件'+result['music']['main'][i]['name'])
                 }
+                if (!same) {
+                    logger.info('已删除旧文件' + result['music']['main'][i]['name'])
+                    result['music']['main'].splice(i, 1)
+                    --i
                 }
-             for(let i =0;i<json.length;i++){
-				json[i] = {name:json[i]}
-			}
-			result['music']['main'] = result['music']['main'].comcat(json)
-			//拼接全部数据 相同的，新增的
-			
-             DataW(result,path,procedureFunc,1)
             }
-        }))){
-            Error(4,'无法读取文件')
+            for (let i = 0; i < json.length; i++) {
+                json[i] = { name: json[i] }
+            }
+            log(json)
+            result['music']['main'] = result['music']['main'].concat(json)
+            //拼接全部数据 相同的，新增的
+            log(result)
+            DataW(result, path, procedureFunc, 1)
+            }
+        ))) {
+            Error(4, '无法读取文件')
             return false
         }
-        function DataW(json,path,func,index){
-			let DataFW = new File(path,2)
-			if(DataFW.seekTo(0,false)){ERROR("DataW","写入文件指针无法归零")}
-			DataW.write(json,function(){
-				eval(func)
-			})
+        function DataW(json, path, func, index) {
+            let DataFW = new File(path, 1)
+            if (!(DataFW.seekTo(0, false))) { ERROR("DataW", "写入文件指针无法归零") }
+            json = JSON.stringify(json)
+            DataFW.write(json, function () {
+                log(func)
+                eval(func)
+                log('a')
+            })
         }
 
->>>>>>> e806366b41b6371e406fdf9cdd087f2dbf66a38d
     }
 }
 
-function init(path){
+function init(path) {
     let cfg = new JsonConfigFile(path)
-    if (cfg == null){
+    log
+    if (cfg == null) {
         ERROR(1)
         return false
-    }else{
-        cfg.init('usingName',"lightSM")//命名空间
-        cfg.init('prefix','LF_')//前缀
-        cfg.init('description',LF_DESCRIPTION)//描述
-        cfg.init('serverRES','.\\development_resource_packs\\serverMusicRE\\')
-        cfg.init('refresh',false)
-        cfg.close
+    } else {
+        cfg.init('usingName', "lightSM")//命名空间
+        cfg.init('prefix', 'LF_')//前缀
+        cfg.init('description', LF_DESCRIPTION)//描述
+        cfg.init('serverRES', String.raw`.\\development_resource_packs\\serverMusicRE\\`)
+        cfg.init('refresh', false)
     }
+    refresh(cfg)
 }
 
-function ERROR(id){
-	aa
+function ERROR(id) {
+
     switch (id) {
         case 1:
             logger.error('无法初始化')
