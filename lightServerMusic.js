@@ -50,6 +50,7 @@ function init(path){
 }
 
 function ERROR(id){
+	aa
     switch (id) {
         case 1:
             logger.error('无法初始化')
