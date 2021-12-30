@@ -58,6 +58,7 @@ function refresh(cfg) {
     let content = cfg.get('desciption')
     let serverRESDIR = cfg.get('serverRES')
     let procedureFunc = "Procedure(index)"
+    let oggJson = []
     Procedure(0)
     function Procedure(index) {
         switch (index) {
