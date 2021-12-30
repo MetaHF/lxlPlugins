@@ -68,7 +68,7 @@ function refresh(cfg) {
                 }
                 break;
             case 1:
-            	
+            		
                 logger.info('test')
             default:
                 break;
