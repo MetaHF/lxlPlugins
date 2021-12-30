@@ -39,7 +39,6 @@ function FileCopyNoPostfix(from, to, postfix) {
     let outArray = []
     outArray = File.getFilesList(from)
     File.mkdir(to)
-    log(outArray)
     for (let i = 0; i < outArray.length; i++) {
         if (!(PostfixRP.test(outArray))) {
             outArray.splice(i, 1)
