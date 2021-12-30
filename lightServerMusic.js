@@ -145,9 +145,9 @@ function refresh(cfg) {
         							}
       							]
 				}
-				jsonSounds.push()
-			
+				jsonSounds.push(jsonW_OBJ)
 			}
+			DataW(jsonSounds,path,"")
 			}
 		}
         function DataW(json, path, func, index) {
