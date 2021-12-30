@@ -53,22 +53,23 @@ function FileCopyNoPostfix(from, to, postfix) {
     return outArray
 }
 function refresh(cfg) {
-    let usingNE = cfg.get('usingName')
-    let prefix = cfg.get('prefix')
-    let content = cfg.get('desciption')
-    let serverRESDIR = cfg.get('serverRES')
+    let usingNE = cfg['usingName']
+    let prefix = cfg['prefix']
+    let content = cfg['desciption']
+    let serverRESDIR = cfg['serverRES']
     let procedureFunc = "Procedure(index)"
-    let oggJson = []
+    let dataJson = []
     Procedure(0)
     function Procedure(index) {
         switch (index) {
             case 0:
-                let oggJson = FileCopyNoPostfix(LF_PATH['SM_DIR'] + 'music\\', serverRESDIR + 'sounds\\', postfix)
+                oggJson = FileCopyNoPostfix(LF_PATH['SM_DIR'] + 'music\\', serverRESDIR + 'sounds\\', postfix)
                 if (!(FuckOldP(LF_PATH['SM_DIR'] + 'data.json', oggJson))) {
                     break
                 }
                 break;
             case 1:
+            	
                 logger.info('test')
             default:
                 break;
@@ -117,19 +118,45 @@ function refresh(cfg) {
             log(json)
             result['music']['main'] = result['music']['main'].concat(json)
             //拼接全部数据 相同的，新增的
-            log(result)
+            dataJson = result
             DataW(result, path, procedureFunc, 1)
             }
         ))) {
             Error(4, '无法读取文件')
             return false
         }
+        function REwriteRES(json,path,cfg){
+			let jsonSounds = {
+				"format_version" : "1.14.0",
+  			  "sound_definitions" : {
+   			}
+			}
+			if((json)&&(json["music"])&&(json["music"]["main"])){
+			ERROR("配置文件出错")
+			}else{
+			for (let i =0 ; i<json["music"]["main"].length;i++){
+				let jsonW_OBJ = {}
+				jsonW_OBJ[cfg["prefix"]+json["music"]["main"][i]] = {
+					"category": cfg["category"],
+      				"sounds": [
+        							{
+         							 "name": String.raw`sounds/music/` + json["music"]["main"][i],
+         							 "stream": true
+        							}
+      							]
+				}
+				jsonSounds.push()
+			
+			}
+			}
+		}
         function DataW(json, path, func, index) {
             let DataFW = new File(path, 1)
             if (!(DataFW.seekTo(0, false))) { ERROR("DataW", "写入文件指针无法归零") }
             json = JSON.stringify(json)
             DataFW.write(json, function () {
                 eval(func)
+                //键入回调函数
             })
         }
 
@@ -143,13 +170,16 @@ function init(path) {
         ERROR(1)
         return false
     } else {
-        cfg.init('usingName', "lightSM")//命名空间
+        cfg.init('category', "lightSM")//命名空间
         cfg.init('prefix', 'LF_')//前缀
         cfg.init('description', LF_DESCRIPTION)//描述
         cfg.init('serverRES', String.raw`.\\development_resource_packs\\serverMusicRE\\`)
         cfg.init('refresh', false)
     }
-    refresh(cfg)
+    cfgJ = cfg.read()
+    cfg.close()
+    cfgJ = data.parseJson(cfgJ)
+    refresh(cfgJ)
 }
 
 function ERROR(msg,msg2,id) {
