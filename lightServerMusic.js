@@ -11,9 +11,11 @@ const LF_DESCRIPTION = "歌曲$name"
 const LF_CFGPATH = '.\\plugins\\lightDEV\\lightServerMusic\\config.json'
 const LF_PATH = {
     SM_DIR: '.\\plugins\\lightDEV\\lightServerMusic\\DATA\\'
+    
 }
 
 const postfix = 'ogg'
+var gui_Lock = false
 
 logger.info('test')
 init(LF_CFGPATH)
@@ -62,13 +64,14 @@ function refresh(cfg) {
     function Procedure(index) {
         switch (index) {
             case 0:
+            	gui_Lock = true
                 oggJson = FileCopyNoPostfix(LF_PATH['SM_DIR'] + 'music\\', serverRESDIR + 'sounds\\', postfix)
                 if (!(FuckOldP(LF_PATH['SM_DIR'] + 'data.json', oggJson))) {
                     break
                 }
                 break;
             case 1:
-            		
+            	REwriteRES(dataJson,cfg['serverRES'],cfg)
                 logger.info('test')
             default:
                 break;
