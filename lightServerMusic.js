@@ -63,7 +63,7 @@ function refresh(cfg) {
         switch (index) {
             case 0:
                 let oggJson = FileCopyNoPostfix(LF_PATH['SM_DIR'] + 'music\\', serverRESDIR + 'sounds\\', postfix)
-                if (!(FuckOldP(LF_PATH['SM_DIR'] + 'data.json', oggJson)) || (oggJson)) {
+                if (!(FuckOldP(LF_PATH['SM_DIR'] + 'data.json', oggJson))) {
                     break
                 }
                 break;
@@ -128,9 +128,7 @@ function refresh(cfg) {
             if (!(DataFW.seekTo(0, false))) { ERROR("DataW", "写入文件指针无法归零") }
             json = JSON.stringify(json)
             DataFW.write(json, function () {
-                log(func)
                 eval(func)
-                log('a')
             })
         }
 
@@ -153,8 +151,9 @@ function init(path) {
     refresh(cfg)
 }
 
-function ERROR(id) {
-
+function ERROR(msg,msg2,id) {
+	logger.error(msg+'\n')
+	logger.error(msg2)
     switch (id) {
         case 1:
             logger.error('无法初始化')
