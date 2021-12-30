@@ -11,17 +11,34 @@ const LF_DESCRIPTION = "歌曲$name"
 const LF_CFGPATH = '.\\plugins\\lightDEV\\lightServerMusic\\config.json'
 const LF_PATH = {
     SM_DIR: '.\\plugins\\lightDEV\\lightServerMusic\\DATA\\'
-    
+
 }
 
 const postfix = 'ogg'
 var gui_Lock = false
+var CfgData = ''
+var MainData = ''
 
-logger.info('test')
-init(LF_CFGPATH)
+mc.listen('onServerStarted',function(){
+    //文件检查 按插件目录增减插件
+    let cfg = new JsonConfigFile(LF_CFGPATH)
+    cfgJ = cfg.read()
+    cfg.close()
+    cfgJ = data.parseJson(cfgJ)
+    CfgData = cfgJ
+    refresh(cfgJ)
+})
+
+mc.listen('onPlayerCmd',function(pl,cmd){
+    if(cmd == 'musicmenu'){
+        Gui_user(pl.xuid)
+        return false
+    }
+})
+
+
 if (!(File.exists(LF_CFGPATH))) {
     init(LF_CFGPATH)
-    logger.info('test')
 }
 
 function checkCFG(path) {
@@ -40,39 +57,43 @@ function FileCopyNoPostfix(from, to, postfix) {
     let PostfixRP = new RegExp('[.]' + postfix + '$')
     let outArray = []
     outArray = File.getFilesList(from)
+    File.delete(to)
     File.mkdir(to)
     for (let i = 0; i < outArray.length; i++) {
         if (!(PostfixRP.test(outArray))) {
             outArray.splice(i, 1)
             --i
-            log(outArray)
-        } else if(!(File.getFilesList(to)[i]==outArray[i])){
+            break
+        } else if (!(File.getFilesList(to)[i] == outArray[i])) {
             if (!(File.copy(from + outArray[i], to))) { Error('复制错误： ' + outArray[i]) }
             else { logger.info('导入音乐' + outArray[i]) }
         }
+        outArray[i] = outArray[i].replace(PostfixRP, '')
     }
     return outArray
 }
 function refresh(cfg) {
-    let usingNE = cfg['usingName']
-    let prefix = cfg['prefix']
-    let content = cfg['desciption']
     let serverRESDIR = cfg['serverRES']
     let procedureFunc = "Procedure(index)"
     let dataJson = []
+
     Procedure(0)
     function Procedure(index) {
         switch (index) {
             case 0:
-            	gui_Lock = true
-                oggJson = FileCopyNoPostfix(LF_PATH['SM_DIR'] + 'music\\', serverRESDIR + 'sounds\\', postfix)
+                gui_Lock = true
+                mc.runcmd('say 音乐正在导入')
+                oggJson = FileCopyNoPostfix(LF_PATH['SM_DIR'] + 'music\\', serverRESDIR + 'sounds\\music\\', postfix)
                 if (!(FuckOldP(LF_PATH['SM_DIR'] + 'data.json', oggJson))) {
                     break
                 }
                 break;
             case 1:
-            	REwriteRES(dataJson,cfg['serverRES'],cfg)
-                logger.info('test')
+                REwriteRES(dataJson, cfg['serverRES'] + 'sounds\\sound_definitions.json', cfg)
+            case 2:
+                gui_Lock = false
+                GetData(LF_PATH['SM_DIR']+'data.json')
+                mc.runcmd('say 音乐更新完毕')
             default:
                 break;
         }
@@ -84,8 +105,7 @@ function refresh(cfg) {
             return false
         }
         if (!(pluginDataFR.readAll(function (result) {
-            log(result)
-            if (result == null || result == []) {
+            if (result === null || result === '') {
                 result = {
                     music: {
                         main: [
@@ -95,7 +115,7 @@ function refresh(cfg) {
                 }
                 DataW(result, path, procedureFunc, 0)
                 return
-            }else{
+            } else {
                 result = data.parseJson(result)
             }
             for (let i = 0; i < result['music']['main'].length; i++) {
@@ -117,57 +137,91 @@ function refresh(cfg) {
             for (let i = 0; i < json.length; i++) {
                 json[i] = { name: json[i] }
             }
-            log(json)
             result['music']['main'] = result['music']['main'].concat(json)
             //拼接全部数据 相同的，新增的
             dataJson = result
+            pluginDataFR.close()
             DataW(result, path, procedureFunc, 1)
-            }
+        }
         ))) {
             Error(4, '无法读取文件')
             return false
         }
-        function REwriteRES(json,path,cfg){
-			let jsonSounds = {
-				"format_version" : "1.14.0",
-  			  "sound_definitions" : {
-   			}
-			}
-			if((json)&&(json["music"])&&(json["music"]["main"])){
-			ERROR("配置文件出错")
-			}else{
-			for (let i =0 ; i<json["music"]["main"].length;i++){
-				let jsonW_OBJ = {}
-				jsonW_OBJ[cfg["prefix"]+json["music"]["main"][i]] = {
-					"category": cfg["category"],
-      				"sounds": [
-        							{
-         							 "name": String.raw`sounds/music/` + json["music"]["main"][i],
-         							 "stream": true
-        							}
-      							]
-				}
-				jsonSounds.push(jsonW_OBJ)
-			}
-			DataW(jsonSounds,path,"")
-			}
-		}
-        function DataW(json, path, func, index) {
-            let DataFW = new File(path, 1)
-            if (!(DataFW.seekTo(0, false))) { ERROR("DataW", "写入文件指针无法归零") }
-            json = JSON.stringify(json)
-            DataFW.write(json, function () {
-                eval(func)
-                //键入回调函数
-            })
-        }
-
     }
+    function REwriteRES(json, path, cfg) {
+        let jsonSounds = {
+            "format_version": "1.14.0",
+            "sound_definitions": {
+            }
+        }
+        if (!((json) && (json["music"]) && (json["music"]["main"]))) {
+            ERROR("配置文件出错")
+        } else {
+            for (let i = 0; i < json["music"]["main"].length; i++) {
+                jsonSounds['sound_definitions'][cfg["prefix"] + json["music"]["main"][i]['name']] = {
+                    "category": cfg["category"],
+                    "sounds": [
+                        {
+                            "name": `sounds/music/` + json["music"]["main"][i]['name'],
+                            // "stream": true
+                        }
+                    ]
+                }
+            }
+            DataW(jsonSounds, path, procedureFunc, 2)
+        }
+    }
+    function DataW(json, path, func, index) {
+        let DataFW = new File(path, 1)
+        if(!(DataFW.flush())){log('未刷新文件  ');DataFW.flush()}
+        if (!(DataFW.seekTo(0, false))) { ERROR("DataW", "写入文件指针无法归零") }
+        json = data.toJson(json, 1)
+        DataFW.write(json, function () {
+            DataFW.flush()
+            eval(func)
+            //键入回调函数
+        })
+    }
+}
+
+function GetData(path){
+    gui_Lock = true
+    let Data = new File(path,0)
+    if (!(Data.seekTo(0, false))) { ERROR("GetData", "读取文件指针无法归零"); return false}
+    Data.readAll(function(json){
+        json = data.parseJson(json)
+        if(json == null ){ERROR("GetData", "读取文件未取到值");return false}
+        MainData = json
+        gui_Lock = false
+    })
+
+}
+
+function Gui_user(xuid,page){
+    let uFrom = mc.newSimpleForm()
+    let pl = mc.getPlayer(xuid)
+    let mainM = MainData['music']['main']
+    if(gui_Lock==true){pl.tell('音乐正在准备中');return false}
+    uFrom = uFrom.setTitle('音乐菜单')
+    uFrom = uFrom.setContent('选择你的音乐')
+    for (let i = 0;i<mainM.length;i++){
+        let des = CfgData['description']
+        let name = mainM[i]['name']
+        let regexp = new RegExp('[$]name')
+        if(mainM[i]['description']!=null){
+            des = mainM['description']
+        }
+        uFrom =uFrom.addButton(des.replace(regexp,name))
+    }
+    pl.sendForm(uFrom,function(pl,id){
+        if(id!=null){
+            pl.runcmd(`playsound "${CfgData['prefix']+mainM[id]['name']}" @s ~~~ 1.0 1.0 1.0 `)
+        }
+    })
 }
 
 function init(path) {
     let cfg = new JsonConfigFile(path)
-    log
     if (cfg == null) {
         ERROR(1)
         return false
@@ -178,15 +232,12 @@ function init(path) {
         cfg.init('serverRES', String.raw`.\\development_resource_packs\\serverMusicRE\\`)
         cfg.init('refresh', false)
     }
-    cfgJ = cfg.read()
-    cfg.close()
-    cfgJ = data.parseJson(cfgJ)
-    refresh(cfgJ)
+    File.mkdir(LF_PATH['SM_DIR']+`music\\`)
 }
 
-function ERROR(msg,msg2,id) {
-	logger.error(msg+'\n')
-	logger.error(msg2)
+function ERROR(msg, msg2, id) {
+    logger.error(msg + '\n')
+    logger.error(msg2)
     switch (id) {
         case 1:
             logger.error('无法初始化')
@@ -197,3 +248,6 @@ function ERROR(msg,msg2,id) {
             break;
     }
 }
+
+
+mc.regPlayerCmd('musicmenu','打开音乐菜单',function(){})
