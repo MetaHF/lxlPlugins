@@ -180,6 +180,7 @@ function refresh(cfg) {
         DataFW.write(json, function () {
             DataFW.flush()
             eval(func)
+            DataFW.close()
             //键入回调函数
         })
     }
