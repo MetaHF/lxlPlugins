@@ -172,7 +172,7 @@ function refresh(cfg) {
         }
     }
     function DataW(json, path, func, index) {
-    	File.delete(path)
+    	//  File.delete(path)
     //清空原文件
         let DataFW = new File(path, 1)
         if(!(DataFW.flush())){log('未刷新文件  ');DataFW.flush()}
@@ -180,8 +180,8 @@ function refresh(cfg) {
         json = data.toJson(json, 1)
         DataFW.write(json, function () {
             DataFW.flush()
-            eval(func)
             DataFW.close()
+            eval(func)
             //键入回调函数
         })
     }
