@@ -172,8 +172,9 @@ function refresh(cfg) {
         }
     }
     function DataW(json, path, func, index) {
+    	File.delete(path)
+    //清空原文件
         let DataFW = new File(path, 1)
-        File.delete(path)
         if(!(DataFW.flush())){log('未刷新文件  ');DataFW.flush()}
         if (!(DataFW.seekTo(0, false))) { ERROR("DataW", "写入文件指针无法归零") }
         json = data.toJson(json, 1)
