@@ -195,6 +195,7 @@ function GetData(path){
         json = data.parseJson(json)
         if(json == null ){ERROR("GetData", "读取文件未取到值");return false}
         MainData = json
+        Data.close()
         gui_Lock = false
     })
 
