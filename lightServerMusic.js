@@ -60,10 +60,10 @@ function FileCopyNoPostfix(from, to, postfix) {
     File.delete(to)
     File.mkdir(to)
     for (let i = 0; i < outArray.length; i++) {
-        if (!(PostfixRP.test(outArray))) {
+        if (PostfixRP.test(outArray[i])==false) {
             outArray.splice(i, 1)
             --i
-            break
+            continue
         } else if (!(File.getFilesList(to)[i] == outArray[i])) {
             if (!(File.copy(from + outArray[i], to))) { Error('复制错误： ' + outArray[i]) }
             else { logger.info('导入音乐' + outArray[i]) }
@@ -100,12 +100,13 @@ function refresh(cfg) {
     }
     function FuckOldP(path, json) {
         let pluginDataFR = new File(path, 0)
+        pluginDataFR.flush()
         if (!(pluginDataFR.seekTo(0, false))) {
             Error(3, '无法归零文件指针')
             return false
         }
         if (!(pluginDataFR.readAll(function (result) {
-            if (result === null || result === '') {
+            if (result === null || result === "" || isJSON(result)==false) {
                 result = {
                     music: {
                         main: [
@@ -117,6 +118,10 @@ function refresh(cfg) {
                 return
             } else {
                 result = data.parseJson(result)
+
+                
+                // result = JSON.parse(result)
+                // if(result==null){DataW(result, path, procedureFunc, 0)}
             }
             for (let i = 0; i < result['music']['main'].length; i++) {
                 let same = false
@@ -140,7 +145,6 @@ function refresh(cfg) {
             result['music']['main'] = result['music']['main'].concat(json)
             //拼接全部数据 相同的，新增的
             dataJson = result
-            pluginDataFR.close()
             DataW(result, path, procedureFunc, 1)
         }
         ))) {
@@ -159,28 +163,33 @@ function refresh(cfg) {
         } else {
             for (let i = 0; i < json["music"]["main"].length; i++) {
                 jsonSounds['sound_definitions'][cfg["prefix"] + json["music"]["main"][i]['name']] = {
+                    "__use_legacy_max_distance" : "true",
                     "category": cfg["category"],
                     "sounds": [
                         {
+                            "load_on_low_memory" : true,
                             "name": `sounds/music/` + json["music"]["main"][i]['name'],
-                            // "stream": true
+                            "stream": true
                         }
                     ]
                 }
             }
+            if(path === undefined){log('配置文件，服务器资源目录有问题');return false}
             DataW(jsonSounds, path, procedureFunc, 2)
         }
     }
     function DataW(json, path, func, index) {
-    	//  File.delete(path)
+        // if(File.exists(path)){
+    	//     File.delete(path)
+        // }
     //清空原文件
+        File.writeTo(path,'')
         let DataFW = new File(path, 1)
         if(!(DataFW.flush())){log('未刷新文件  ');DataFW.flush()}
         if (!(DataFW.seekTo(0, false))) { ERROR("DataW", "写入文件指针无法归零") }
         json = data.toJson(json, 1)
         DataFW.write(json, function () {
             DataFW.flush()
-            DataFW.close()
             eval(func)
             //键入回调函数
         })
@@ -219,7 +228,7 @@ function Gui_user(xuid,page){
     }
     pl.sendForm(uFrom,function(pl,id){
         if(id!=null){
-            pl.runcmd(`playsound "${CfgData['prefix']+mainM[id]['name']}" @s ~~~ 1.0 1.0 1.0 `)
+            pl.runcmd(`playsound ${CfgData['prefix']+mainM[id]['name']} @s ~~~ 1.0 1.0 1.0 `)
         }
     })
 }
@@ -255,3 +264,22 @@ function ERROR(msg, msg2, id) {
 
 
 mc.regPlayerCmd('musicmenu','打开音乐菜单',function(){})
+
+function isJSON(str) {
+    //来自 https://www.cnblogs.com/lanleiming/p/7096973.html
+    if (typeof str == 'string') {
+        try {
+            var obj=JSON.parse(str);
+            if(typeof obj == 'object' && obj ){
+                return true;
+            }else{
+                return false;
+            }
+
+        } catch(e) {
+            console.log('error：'+str+'!!!'+e);
+            return false;
+        }
+    }
+    console.log('It is not a string!')
+}
