@@ -341,7 +341,7 @@ function usrGUI(xuid){
 							content = format(text,{name:rename})
 							SF = SF.addButton(content)
 							pl.sendForm(SF,function(pl,id1){
-								
+								//未写完
 							})
 						}
 					}else if(mode==0 || id ==2){
