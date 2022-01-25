@@ -334,5 +334,24 @@ function usrGUI(xuid){
         }
     })
     
-    function musicButton(fm,)
+    function musicButton(fm,arry){
+		for (let i = 0; i<arry.length;i++){
+			
+		}
+	}
+}
+
+function format(str,obj){
+	//str 为字符串 obj 为替代对象 例如 {name:"me"} str 替代表达式{name}
+	if(typeof(str)== "string"&&typeof(obj)=="object" ){
+		for (key in obj){
+			let reg = new RegExp("/({"+key"})/","g")
+			str = str.replace(reg,obj[key])
+		}
+		return str
+	}else{
+		logger.error("格式化字符串出错")
+		return "error"
+	}
+	return "error"
 }
