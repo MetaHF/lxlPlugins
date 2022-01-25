@@ -339,8 +339,16 @@ function usrGUI(xuid){
 								text = DataArry[i]["text"]
 							}
 							content = format(text,{name:rename})
-							fm = fm.addButton(content)
+							SF = SF.addButton(content)
+							pl.sendForm(SF,function(pl,id1){
+								
+							})
 						}
+					}else if(mode==0 || id ==2){
+						
+						
+						
+						return false
 					}
 				}
 			})
