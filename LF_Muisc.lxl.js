@@ -36,7 +36,7 @@ var DataCfg = new JsonConfigFile(PATH.DATA,`
 		]
 	}
 `)
-var DataArry = data.parseJson(DataCfg.read())
+var DataArry = DataCfg.get("music")
 
 //无资源包不执行动作
 var enable = true
@@ -324,21 +324,29 @@ function usrGUI(xuid){
 					let SF = mc.newSimpleForm()
 					if (mode == 0 &&( id == 0 || id== 1 )){
 						//显示音乐按钮 /music 播放音乐 添加音乐到队列 /playsound 播放音乐
+						
 						SF = SF.setTitle("选择音乐")
 						SF = SF.setContent("选一首喜欢的音乐吧")
 						
-						
+						for (let i= 0;i<DataArry;i++){
+							let rename = DataArry[i]["rename"]
+							let text = config.get("usrGUI")["defaultTEXT"]
+							let content = ""
+							if (rename==""){
+								rename = DataArry[i]["index"]
+							}
+							if (typeof (DataArry[i]["text"]) =="string" && DataArry[i]["text"] != ""){
+								text = DataArry[i]["text"]
+							}
+							content = format(text,{name:rename})
+							fm = fm.addButton(content)
+						}
 					}
 				}
 			})
         }
     })
     
-    function musicButton(fm,arry){
-		for (let i = 0; i<arry.length;i++){
-			
-		}
-	}
 }
 
 function format(str,obj){
