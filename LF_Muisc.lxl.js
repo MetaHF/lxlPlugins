@@ -83,6 +83,10 @@ mc.regPlayerCmd("mucmenu", "召唤音乐菜单界面", function (pl, arg) {
     usrGUI(pl.xuid)
 })
 
+
+
+
+
 function refMusic(xuid) {
     const pl = mc.getPlayer(xuid)
     const muiscArry = copyFL(PATH.MUSIC, config.get("serverRES") + "sounds/music/", config.get("sunds")["postfix"])
@@ -144,7 +148,7 @@ function refMusic(xuid) {
             "sound_definitions": {
             }
         }
-        log('fssdfsdf',dataJson)
+
         //soundJson = data.parseJson(soundJson)
 
         if (dataJson != "") {
@@ -154,7 +158,7 @@ function refMusic(xuid) {
         }
 
         for (let i = 0; i < arry.length; i++) {
-            soundJson["sound_definitions"][config.get("sounds")[prefix] + arry[i]] = {
+            soundJson["sound_definitions"][config.get("sounds")['prefix'] + arry[i]] = {
                 category: config.get("sounds")["category"],
                 sounds: [
                     {
@@ -206,14 +210,25 @@ function refMusic(xuid) {
             return false
         }
 
-        for (let i = 2; i > 0; i--) {
-            if (version[i] <= 99) {
-                version[i] += 1
-                break
-            } else {
-                version[i] -= 99
-                version[i - 1] += 1
-            }
+        // for (let i = 2; i > 0; i--) {
+        //     if (version[i] <= 99) {
+        //         version[i] += 1
+        //         break
+        //     } else {
+        //         version[i] -= 99
+        //         version[i - 1] += 1
+        //     }
+        // } 写法有误
+
+        if(version[2]<=99){
+            version[2] +=1
+        }else if(version[1]<=99){
+            version[2] = 0
+            version[1] += 1
+        }else if(version[0]<=99){
+            version[2] = 0
+            version[1] = 0
+            version[0] += 1
         }
 
         log(version)
@@ -272,3 +287,17 @@ function refMusic(xuid) {
     }
 }
 
+function usrGUI(xuid){
+    let pl = mc.getPlayer(xuid)
+    let mainSF = mc.newSimpleForm()
+    mainSF = mainSF.setTitle('音乐主菜单')
+    mainSF = mainSF.setContent('选择你的音乐播放模式')
+    mainSF = mainSF.addButton('跟随播放模式')
+    mainSF = mainSF.addButton('定点播放模式')
+    pl.sendForm(mainSF,function(pl,mode){
+        //mode 选择的模式
+        if(id!=null){
+            
+        }
+    })
+}
