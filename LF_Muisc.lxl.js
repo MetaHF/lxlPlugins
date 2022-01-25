@@ -177,14 +177,17 @@ function refMusic(xuid) {
 
             for (let v = 0; v < dataJson.length; v++) {
                 if (dataJson[v]["index"] == arry[i]) {
-                	
+                	dataList.push({
+						index: dataJson[v]["index"] ,
+						rename: dataJson[v]["rename"]
+
+					})
                     continue
                 }
                 if (v >= dataJson.length) {
                     dataList.push({
                         index: arry[i],
                         rename: ""
-                        
                     })
                 }
             }
