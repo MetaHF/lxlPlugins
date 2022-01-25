@@ -296,8 +296,15 @@ function usrGUI(xuid){
     mainSF = mainSF.addButton('定点播放模式')
     pl.sendForm(mainSF,function(pl,mode){
         //mode 选择的模式
-        if(id!=null){
-            
+        if(mode!=null){
+            let modeSF = mc.newSimpleForm()
+            modeSF = modeSF.setContent("选择功能")
+            if (mode==0){
+             
+              modeSF = modeSF.setTitle("音乐菜单@跟随播放模式")
+              modeSF = modeSF.addButton("选择播放音乐")
+              modeSF = modeSF.addButton("添加音乐队列")
+            }
         }
     })
 }
