@@ -98,7 +98,7 @@ function refMusic(xuid) {
     const muiscArry = copyFL(PATH.MUSIC, config.get("serverRES") + "sounds/music/", config.get("sunds")["postfix"])
     log(muiscArry)
     log(config.get("serverRES") + "sounds/sound_definitions.json")
-    writeRandD(muiscArry, './development_resource_packs/serverMusicRE/sounds/sound_definitions.json', PATH.DATA)
+    writeRandD(muiscArry, config.get("serverRES")+'sounds/sound_definitions.json', PATH.DATA)
 
     if (updateVerion(config.get('serverRES') + 'manifest.json', config) == true) {
         logger.info("音乐已更新完毕")
@@ -300,22 +300,39 @@ function refMusic(xuid) {
 
 function usrGUI(xuid){
     let pl = mc.getPlayer(xuid)
-    let mainSF = mc.newSimpleForm()
-    mainSF = mainSF.setTitle('音乐主菜单')
-    mainSF = mainSF.setContent('选择你的音乐播放模式')
-    mainSF = mainSF.addButton('跟随播放模式')
-    mainSF = mainSF.addButton('定点播放模式')
-    pl.sendForm(mainSF,function(pl,mode){
+    let SF = mc.newSimpleForm()
+    SF = SF.setTitle('音乐主菜单')
+    SF = SF.setContent('选择你的音乐播放模式')
+    SF = SF.addButton('跟随播放模式')
+    SF = SF.addButton('定点播放模式')
+    pl.sendForm(SF,function(pl,mode){
         //mode 选择的模式
         if(mode!=null){
-            let modeSF = mc.newSimpleForm()
-            modeSF = modeSF.setContent("选择功能")
+            let SF = mc.newSimpleForm()
             if (mode==0){
-             
-              modeSF = modeSF.setTitle("音乐菜单@跟随播放模式")
-              modeSF = modeSF.addButton("选择播放音乐")
-              modeSF = modeSF.addButton("添加音乐队列")
-            }
+              SF = SF.setContent("选择功能 \n 注意如果当前音乐为循环模式，就不可添加音乐到音乐队列")
+              SF = SF.setTitle("音乐菜单@跟随播放模式")
+              SF = SF.addButton("选择播放音乐")
+              SF = SF.addButton("添加音乐队列")
+            }else if (mode == 1){
+
+			}
+			
+			SF = SF.addButton("停止播放音乐")
+			pl.sendForm(SF,function(pl,id){
+				if (id !=null){
+					let SF = mc.newSimpleForm()
+					if (mode == 0 &&( id == 0 || id== 1 )){
+						//显示音乐按钮 /music 播放音乐 添加音乐到队列 /playsound 播放音乐
+						SF = SF.setTitle("选择音乐")
+						SF = SF.setContent("选一首喜欢的音乐吧")
+						
+						
+					}
+				}
+			})
         }
     })
+    
+    function musicButton(fm,)
 }
