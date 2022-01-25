@@ -1,0 +1,28 @@
+{
+    "sunds": {
+        "postfix": [
+            "ogg"
+        ],
+        "category": "music",
+        "prefix": "music.game.",
+        "stream": "true"
+    },
+    "usrGUI": {
+        "enable": true,
+        "defaultTEXT": "歌曲{name}",
+        "musicCMD": {
+            "enable": true
+        },
+        "playsoundCMD": {
+            "enable": true
+        }
+    },
+    "serverRES": "./development_resource_packs/serverMusicRE/",
+    "worldJson": "./worlds/Bedrock level/world_resource_packs.json",
+    "version": [
+        0,
+        0,
+        10
+    ],
+    "reference": false
+}

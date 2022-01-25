@@ -1,0 +1,29 @@
+{
+    "DebugMode": false,
+    "Language": "en",
+    "LogLevel": 4,
+    "Modules": {
+        "AntiGive": {
+            "enabled": true
+        },
+        "AutoUpgrade": {
+            "enabled": true
+        },
+        "CrashLogger": {
+            "enabled": true,
+            "path": "plugins\\LiteLoader\\CrashLogger_Daemon.exe"
+        },
+        "FixDisconnectBug": {
+            "enabled": true
+        },
+        "FixListenPort": {
+            "enabled": true
+        },
+        "SimpleServerLogger": {
+            "enabled": true
+        },
+        "UnlockCmd": {
+            "enabled": true
+        }
+    }
+}
