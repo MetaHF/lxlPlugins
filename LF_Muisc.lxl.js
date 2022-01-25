@@ -29,7 +29,13 @@ var config = new JsonConfigFile(PATH.MAIN + "/config.json",
     "reference": false
       }`)
 
-var DataCfg = new JsonConfigFile(PATH.DATA)
+var DataCfg = new JsonConfigFile(PATH.DATA,`
+	{
+	 "music": [
+
+		]
+	}
+`)
 var DataArry = data.parseJson(DataCfg.read())
 
 //无资源包不执行动作
@@ -142,7 +148,7 @@ function refMusic(xuid) {
         const dataCfg = new JsonConfigFile(pathD)
         log(soundCfg.read())
         let dataList = []
-        let dataJson = dataCfg.read()
+        let dataJson = dataCfg.get("music")
         let soundJson = {
             "format_version": "1.14.0",
             "sound_definitions": {
@@ -151,11 +157,11 @@ function refMusic(xuid) {
 
         //soundJson = data.parseJson(soundJson)
 
-        if (dataJson != "") {
-            dataJson = data.parseJson(dataJson)
-        } else {
-            dataJson = []
-        }
+        //if (dataJson != "") {
+            //dataJson = data.parseJson(dataJson)
+       // } else {
+       //     dataJson = []
+      //  }
 
         for (let i = 0; i < arry.length; i++) {
             soundJson["sound_definitions"][config.get("sounds")['prefix'] + arry[i]] = {
@@ -171,12 +177,14 @@ function refMusic(xuid) {
 
             for (let v = 0; v < dataJson.length; v++) {
                 if (dataJson[v]["index"] == arry[i]) {
+                	
                     continue
                 }
                 if (v >= dataJson.length) {
                     dataList.push({
-                        name: arry[i],
-                        dos: ""
+                        index: arry[i],
+                        rename: ""
+                        
                     })
                 }
             }
@@ -186,7 +194,7 @@ function refMusic(xuid) {
 
         //更新全局变量
         soundCfg.write(data.toJson(soundJson, 1))
-        dataCfg.write(data.toJson(dataList, 1))
+        dataCfg.set("music",dataList)
 
         dataCfg.reload()
         soundCfg.close()
