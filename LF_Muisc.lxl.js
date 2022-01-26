@@ -160,7 +160,7 @@ function refMusic() {
 
         //需要config json对象
         const soundCfg = new JsonConfigFile(pathR, '{}')
-        const dataCfg = new JsonConfigFile(pathD)
+        const dataCfg = DataCfg
 
         let dataList = []
         let dataJson = dataCfg.get("music")
@@ -291,7 +291,7 @@ function refMusic() {
         }else{
             worldJson = data.parseJson(worldJson)
 
-            for (let i=0; i<worldJson.length;i++){
+            for (let i=0; i=<worldJson.length;i++){
                 if (worldJson[i]['pack_id']=='f3f55c4c-991a-4158-9ae3-5cf7b2848072'){
                     worldJson[i]['version'] = version
                     break
