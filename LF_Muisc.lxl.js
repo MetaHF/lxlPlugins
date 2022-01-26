@@ -160,7 +160,7 @@ function refMusic() {
     //将数据写入addons的音乐索引 和 插件的音乐数据 中
     function writeRandD(arry, pathR) {
 
-        //需要config json对象
+        //需要config Data json对象
         const soundCfg = new JsonConfigFile(pathR, '{}')
         const dataCfg = DataCfg
 
@@ -180,7 +180,7 @@ function refMusic() {
                 category: config.get("sounds")["category"],
                 sounds: [
                     {
-                        name: arry[i],
+                        name: "sounds/music/" + arry[i],
                         stream: config.get("sounds")["stream"]
                     }
                 ]
