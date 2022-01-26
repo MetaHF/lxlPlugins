@@ -1,5 +1,5 @@
 {
-    "sunds": {
+    "sounds": {
         "postfix": [
             "ogg"
         ],
@@ -22,7 +22,7 @@
     "version": [
         0,
         0,
-        10
+        16
     ],
     "reference": false
 }

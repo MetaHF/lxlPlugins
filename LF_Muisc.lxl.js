@@ -7,7 +7,7 @@ const PATH = {
 
 var config = new JsonConfigFile(PATH.MAIN + "/config.json",
     `{
-    "sunds":{
+    "sounds":{
       "postfix": ["ogg"],
       "category" : "music",
       "prefix": "music.game.",
@@ -44,6 +44,8 @@ var enable = true
 
 //设置输出日志
 logger.setConsole(true, 4)
+
+
 if (File.exists(config.get("serverRES")) == false) {
     //无资源包不执行动作
     setTimeout('logger.error(`请将资源包放到 ${config.get("serverRES")} 的上一级目录，且名字为最后的/目录名字/`)', 2000)
@@ -93,12 +95,11 @@ mc.regPlayerCmd("mucmenu", "召唤音乐菜单界面", function (pl, arg) {
 
 
 
-function refMusic(xuid) {
-    const pl = mc.getPlayer(xuid)
-    const muiscArry = copyFL(PATH.MUSIC, config.get("serverRES") + "sounds/music/", config.get("sunds")["postfix"])
-    log(muiscArry)
-    log(config.get("serverRES") + "sounds/sound_definitions.json")
-    writeRandD(muiscArry, config.get("serverRES")+'sounds/sound_definitions.json', PATH.DATA)
+function refMusic() {
+
+    const musicArry = copyFL(PATH.MUSIC, config.get("serverRES") + "sounds/music/", config.get("sounds")["postfix"])
+
+    writeRandD(musicArry, config.get("serverRES")+'sounds/sound_definitions.json', PATH.DATA)
 
     if (updateVerion(config.get('serverRES') + 'manifest.json', config) == true) {
         logger.info("音乐已更新完毕")
@@ -106,7 +107,7 @@ function refMusic(xuid) {
 
     function copyFL(from, to, postfix) {
         //需要config json对象
-        log(from)
+
         let fileArry = File.getFilesList(from)
         let outArry = []
 
@@ -118,25 +119,34 @@ function refMusic(xuid) {
             //防止未输入后缀格式
             postfix = ["ogg"]
         }
-        for (let i = 0; i < fileArry; i++) {
-            for (const key in postfix) {
-                let reg = new RegExp("/(." + postfix[key] + ")$/", "g")
+
+        for (let i = 0; i < fileArry.length; i++) {
+
+            for (let v = 0;v< postfix.length;v++) {
+
+                let reg = new RegExp("(." + postfix[v] + ")$", "g")
+
                 if (reg.test(fileArry[i]) == true) {
+
                     if (File.copy(from + fileArry[i], to) == true) {
 
                         //去除后缀
-                        let reg = new RegExp("/(." + postfix[key] + ")$/", "i")
+                        let reg = new RegExp("(." + postfix[v] + ")$", "i")
+
                         outArry.push(fileArry[i].replace(reg, ""))
 
                         //未设置debug显示
-                        logger.debug(`音乐 ${fileArry[i]} 导入`)
+                        logger.info(`音乐 ${fileArry[i]} 导入`)
                     } else {
                         logger.info(`音乐 ${fileArry[i]} 导入失败`)
                     }
+                }else {
+                    log('bug1')
                 }
             }
 
         }
+
         return outArry
     }
 
@@ -146,24 +156,19 @@ function refMusic(xuid) {
         //需要config json对象
         const soundCfg = new JsonConfigFile(pathR, '{}')
         const dataCfg = new JsonConfigFile(pathD)
-        log(soundCfg.read())
+
         let dataList = []
         let dataJson = dataCfg.get("music")
         let soundJson = {
-            "format_version": "1.14.0",
-            "sound_definitions": {
+            format_version: "1.14.0",
+            sound_definitions: {
             }
         }
 
-        //soundJson = data.parseJson(soundJson)
 
-        //if (dataJson != "") {
-            //dataJson = data.parseJson(dataJson)
-       // } else {
-       //     dataJson = []
-      //  }
 
         for (let i = 0; i < arry.length; i++) {
+
             soundJson["sound_definitions"][config.get("sounds")['prefix'] + arry[i]] = {
                 category: config.get("sounds")["category"],
                 sounds: [
@@ -175,25 +180,27 @@ function refMusic(xuid) {
             }
 
 
-            for (let v = 0; v < dataJson.length; v++) {
-                if (dataJson[v]["index"] == arry[i]) {
-                	dataList.push({
+            for (let v = 0; v <= dataJson.length; v++) {
+
+                if (dataJson[v]!=null&&(dataJson[v]["index"] == arry[i])) {
+                	dataList[dataList.length] ={
 						index: dataJson[v]["index"] ,
 						rename: dataJson[v]["rename"]
 
-					})
+					}
                     continue
                 }
                 if (v >= dataJson.length) {
-                    dataList.push({
+                    dataList[dataList.length] = {
                         index: arry[i],
-                        rename: ""
-                    })
+                        rename: arry[i]
+                    }
                 }
             }
 
 
         }
+
 
         //更新全局变量
         soundCfg.write(data.toJson(soundJson, 1))
@@ -242,7 +249,6 @@ function refMusic(xuid) {
             version[0] += 1
         }
 
-        log(version)
 
         Main.set('header', {
             description: "lxl加载器的lightSM的音乐资源包",
@@ -266,7 +272,9 @@ function refMusic(xuid) {
         ])
 
         Main.close()
-        log(worldJson)
+
+
+
         if(worldJson=='[]'){
             worldJson = [
                 {
@@ -274,8 +282,10 @@ function refMusic(xuid) {
                     version: version
                 }
             ]
+
         }else{
             worldJson = data.parseJson(worldJson)
+
             for (let i=0; i<worldJson.length;i++){
                 if (worldJson[i]['pack_id']=='f3f55c4c-991a-4158-9ae3-5cf7b2848072'){
                     worldJson[i]['version'] = version
@@ -290,6 +300,7 @@ function refMusic(xuid) {
         }
 
         world.write(data.toJson(worldJson,1))
+        world.reload()
         world.close()
 
         config.set('version',version)
@@ -314,21 +325,23 @@ function usrGUI(xuid){
               SF = SF.setTitle("音乐菜单@跟随播放模式")
               SF = SF.addButton("选择播放音乐")
               SF = SF.addButton("添加音乐队列")
-            }else if (mode == 1){
-
+            }else if(mode == 1){
+                SF = SF.setContent("选择功能")
+                SF = SF.setTitle("音乐菜单@定点播放模式")
+                SF = SF.addButton("选择播放音乐")
 			}
 			
 			SF = SF.addButton("停止播放音乐")
 			pl.sendForm(SF,function(pl,id){
 				if (id !=null){
 					let SF = mc.newSimpleForm()
-					if (mode == 0 &&( id == 0 || id== 1 )){
+					if ((mode == 0 &&( id == 0 || id== 1 ))||(mode == 1 && id==0)){
 						//显示音乐按钮 /music 播放音乐 添加音乐到队列 /playsound 播放音乐
 						
 						SF = SF.setTitle("选择音乐")
 						SF = SF.setContent("选一首喜欢的音乐吧")
 						
-						for (let i= 0;i<DataArry;i++){
+						for (let i= 0;i<DataArry.length;i++){
 							let rename = DataArry[i]["rename"]
 							let text = config.get("usrGUI")["defaultTEXT"]
 							let content = ""
@@ -340,16 +353,53 @@ function usrGUI(xuid){
 							}
 							content = format(text,{name:rename})
 							SF = SF.addButton(content)
-							pl.sendForm(SF,function(pl,id1){
-								//未写完
-							})
 						}
-					}else if(mode==0 || id ==2){
-						
+
+                        pl.sendForm(SF,function(pl,id1){
+                            //未写完 调节音量
+                            if (id1 != null){
+                                let CF = mc.newCustomForm()
+                                log(id1[0],id1[1])
+                                // if((mode == 0 &&( id == 0 || id== 1 ))||(mode == 1 && id==1)){
+                                    CF = CF.setTitle("属性")
+                                    CF = CF.addLabel(`选择音乐 ${DataArry[id1]['rename']}`)
+                                    CF = CF.addSlider("音量",1,100,1,50)
+                                    if(mode == 0 && (id == 0||id == 1)){
+                                        CF = CF.addSwitch("是否开启循环播放",false)
+                                    }
+                                // }
+                                pl.sendForm(CF,function(pl,Arry){
+                                    log(Arry[0],Arry[1])
+                                    if(Arry!=null){
+                                        let musicIndex = config.get("sounds")["prefix"] + DataArry[id1]['index']
+                                        let volume = Arry[1]/100
+
+                                        let loop = "play_once"
+                                            if (Arry[2]==true){
+                                                loop = "loop"
+                                            }
+
+                                        if(mode == 0 && id == 0 ){
+                                            pl.runcmd(`execute @s ~~~ music play ${musicIndex} ${volume} 0 ${loop}`)
+                                        }else if (mode == 0 && id == 1 ){
+                                            pl.runcmd(`execute @s ~~~ music queue ${musicIndex} ${volume} 0 ${loop}`)
+                                        }else if (mode == 1 && id == 0){
+                                            pl.runcmd(`execute @s ~~~ playsound ${musicIndex} @s ~~~ ${volume} 1.0 `)
+                                        }
+                                    }
+                                })
+                            }
+                        })
+					}else if(mode==0 && id ==2){
+						pl.runcmd(`execute @s ~~~ music stop 0`)
 						
 						
 						return false
-					}
+					}else if(mode == 1&& id ==1){
+                        pl.runcmd(`execute @s ~~~ stopsound @s`)
+
+                        return false
+                    }
 				}
 			})
         }
@@ -361,7 +411,7 @@ function format(str,obj){
 	//str 为字符串 obj 为替代对象 例如 {name:"me"} str 替代表达式{name}
 	if(typeof(str)== "string"&&typeof(obj)=="object" ){
 		for (key in obj){
-			let reg = new RegExp("/({"+key"})/","g")
+			let reg = new RegExp("({"+key+"})","g")
 			str = str.replace(reg,obj[key])
 		}
 		return str
@@ -369,5 +419,4 @@ function format(str,obj){
 		logger.error("格式化字符串出错")
 		return "error"
 	}
-	return "error"
 }
