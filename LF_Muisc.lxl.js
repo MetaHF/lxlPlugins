@@ -102,7 +102,7 @@ function refMusic() {
 
     const musicArry = copyFL(PATH.MUSIC, config.get("serverRES") + "sounds/music/", config.get("sounds")["postfix"])
 
-    writeRandD(musicArry, config.get("serverRES")+'sounds/sound_definitions.json', PATH.DATA)
+    writeRandD(musicArry, config.get("serverRES")+'sounds/sound_definitions.json')
 
     if (updateVerion(config.get('serverRES') + 'manifest.json', config) == true) {
         logger.info("音乐已更新完毕")
@@ -122,6 +122,8 @@ function refMusic() {
             //防止未输入后缀格式
             postfix = ["ogg"]
         }
+        
+        
         File.mkdir(to)
 
 
@@ -156,7 +158,7 @@ function refMusic() {
     }
 
     //将数据写入addons的音乐索引 和 插件的音乐数据 中
-    function writeRandD(arry, pathR, pathD) {
+    function writeRandD(arry, pathR) {
 
         //需要config json对象
         const soundCfg = new JsonConfigFile(pathR, '{}')
