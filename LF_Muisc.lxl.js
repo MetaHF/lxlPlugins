@@ -11,7 +11,8 @@ var config = new JsonConfigFile(PATH.MAIN + "/config.json",
       "postfix": ["ogg"],
       "category" : "music",
       "prefix": "music.game.",
-      "stream": "true"
+      "stream": "true",
+      "?stream": "此为流式传输具体看 wiki"
     },
     "usrGUI":{
       "enable": true,
@@ -64,28 +65,28 @@ if (File.exists(config.get("serverRES")) == false) {
 }
 
 mc.listen("onPlayerCmd", function (pl, cmd) {
-    if (enable == true && (cmd == "refLF_M" || cmd == "MUCmenu"))
+    if (cmd == "refLF_M" || cmd == "MUCmenu")
         return false
 })
 
 
 
+//if (enable == true && (cmd == "refLF_M" || cmd == "MUCmenu"))
 
+//mc.regConsoleCmd('reflf', '', function () { })
 
-mc.regConsoleCmd('reflf', '', function () { })
+// mc.listen("onConsoleCmd", function (cmd) {
+//     if (cmd == 'reflf') {
+//         refMusic()
+//         return false
+//     }
+// })
 
-mc.listen("onConsoleCmd", function (cmd) {
-    if (cmd == 'reflf') {
-        refMusic()
-        return false
-    }
-})
-
-
+//调试 用
 
 
 mc.regPlayerCmd("reflf_m", "刷新LF_muic的音乐文件", function (pl, arg) {
-    refMusic(pl.xuid)
+    refMusic()
 }, 1)
 mc.regPlayerCmd("mucmenu", "召唤音乐菜单界面", function (pl, arg) {
     usrGUI(pl.xuid)
@@ -359,7 +360,6 @@ function usrGUI(xuid){
                             //未写完 调节音量
                             if (id1 != null){
                                 let CF = mc.newCustomForm()
-                                log(id1[0],id1[1])
                                 // if((mode == 0 &&( id == 0 || id== 1 ))||(mode == 1 && id==1)){
                                     CF = CF.setTitle("属性")
                                     CF = CF.addLabel(`选择音乐 ${DataArry[id1]['rename']}`)
@@ -369,7 +369,6 @@ function usrGUI(xuid){
                                     }
                                 // }
                                 pl.sendForm(CF,function(pl,Arry){
-                                    log(Arry[0],Arry[1])
                                     if(Arry!=null){
                                         let musicIndex = config.get("sounds")["prefix"] + DataArry[id1]['index']
                                         let volume = Arry[1]/100
