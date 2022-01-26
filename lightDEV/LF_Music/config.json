@@ -5,7 +5,8 @@
         ],
         "category": "music",
         "prefix": "music.game.",
-        "stream": "true"
+        "stream": "true",
+        "?stream": "此为流式传输具体看 wiki"
     },
     "usrGUI": {
         "enable": true,
@@ -22,7 +23,7 @@
     "version": [
         0,
         0,
-        16
+        15
     ],
     "reference": false
 }

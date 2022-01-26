@@ -11,7 +11,7 @@ var config = new JsonConfigFile(PATH.MAIN + "/config.json",
       "postfix": ["ogg"],
       "category" : "music",
       "prefix": "music.game.",
-      "stream": "true",
+      "stream": true,
       "?stream": "此为流式传输具体看 wiki"
     },
     "usrGUI":{
@@ -52,7 +52,8 @@ if (File.exists(config.get("serverRES")) == false) {
     setTimeout('logger.error(`请将资源包放到 ${config.get("serverRES")} 的上一级目录，且名字为最后的/目录名字/`)', 2000)
     enable = false
 
-} else if (File.exists(config.get("worldJson")) == false) {
+}
+if (File.exists(config.get("worldJson")) == false) {
     let wRES = new JsonConfigFile(config.get("worldJson"), `[
         {
           pack_id:"f3f55c4c-991a-4158-9ae3-5cf7b2848072",
@@ -60,7 +61,8 @@ if (File.exists(config.get("serverRES")) == false) {
         }
       ]`)
     wRES.close()
-} else if (File.exists(PATH.MUSIC) == false) {
+}
+if (File.exists(PATH.MUSIC) == false) {
     File.mkdir(PATH.MUSIC)
 }
 
@@ -73,7 +75,7 @@ mc.listen("onPlayerCmd", function (pl, cmd) {
 
 //if (enable == true && (cmd == "refLF_M" || cmd == "MUCmenu"))
 
-//mc.regConsoleCmd('reflf', '', function () { })
+// mc.regConsoleCmd('reflf', '', function () { })
 
 // mc.listen("onConsoleCmd", function (cmd) {
 //     if (cmd == 'reflf') {
@@ -113,13 +115,15 @@ function refMusic() {
         let outArry = []
 
         //清除所有旧音乐文件
+        
         File.delete(to)
-        File.mkdir(to)
 
         if (postfix.length == 0) {
             //防止未输入后缀格式
             postfix = ["ogg"]
         }
+        File.mkdir(to)
+
 
         for (let i = 0; i < fileArry.length; i++) {
 
@@ -189,7 +193,7 @@ function refMusic() {
 						rename: dataJson[v]["rename"]
 
 					}
-                    continue
+                    break
                 }
                 if (v >= dataJson.length) {
                     dataList[dataList.length] = {
