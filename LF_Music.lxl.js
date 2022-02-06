@@ -26,6 +26,7 @@ var config = new JsonConfigFile(PATH.MAIN + "/config.json",
     },
     "serverRES": "./development_resource_packs/serverMusicRE/",
     "worldJson": "./worlds/Bedrock level/world_resource_packs.json",
+    "worldJsonLock":false,
     "version": [0,0,1],
     "reference": false
       }`)
@@ -56,11 +57,21 @@ mc.listen("onServerStarted", function () {
         setTimeout('logger.error(`请将资源包放到 ${config.get("serverRES")} 的上一级目录，且名字为最后的/目录名字/`)', 2000)
         enable = false
 
+    } else if (File.getFilesList(config.get("serverRES")).length < 4) {
+        setTimeout('logger.error(`请检查资源包完整性`)', 2000)
+        enable = false
     }
+
     if (File.exists(config.get("worldJson")) == false) {
-        
+        //自动寻找地图文件夹 （找第一个） worldJsonLock 用于锁住禁止修改worldJson 的值
+        if ((File.getFilesList('./worlds/') != null || File.getFilesList('./worlds/').length != 0)&&(config.get('worldJsonLock')==false||config.get('worldJsonLock')==null)) {
+            config.set('worldJson', './worlds/' + File.getFilesList('./worlds/')[0] + '/world_resource_packs.json')
+            config.set('worldJsonLock',true)
+            config.reload()
+        }
         let wRES = new JsonConfigFile(config.get("worldJson"), `[]`)
         wRES.close()
+
     }
     if (File.exists(PATH.MUSIC) == false) {
         File.mkdir(PATH.MUSIC)
