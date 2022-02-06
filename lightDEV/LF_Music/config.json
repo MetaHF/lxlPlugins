@@ -5,7 +5,7 @@
         ],
         "category": "music",
         "prefix": "music.game.",
-        "stream": "true",
+        "stream": true,
         "?stream": "此为流式传输具体看 wiki"
     },
     "usrGUI": {
@@ -22,8 +22,8 @@
     "worldJson": "./worlds/Bedrock level/world_resource_packs.json",
     "version": [
         0,
-        0,
-        15
+        2,
+        0
     ],
     "reference": false
 }
